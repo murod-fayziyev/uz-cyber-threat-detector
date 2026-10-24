@@ -129,22 +129,22 @@
                         <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-400"></i> Tezkor Sinov Shablonlari:
                     </p>
                     <div class="grid grid-cols-2 gap-2">
-                        <button onclick="setSample(1)" class="text-[11px] font-mono bg-cyber-800 hover:bg-cyber-700 text-rose-300 p-2 rounded border border-rose-500/30 transition-all text-left flex items-center gap-1.5">
+                        <button onclick="setSample(1)" class="text-[11px] font-mono bg-cyber-800 hover:bg-cyber-700 text-rose-300 p-2 rounded border border-rose-500/30 transition-all text-left flex items-center gap-1.5 cursor-pointer">
                             <i data-lucide="heart-crack" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> Kasalxona / Yaqinlar
                         </button>
-                        <button onclick="setSample(2)" class="text-[11px] font-mono bg-cyber-800 hover:bg-cyber-700 text-purple-300 p-2 rounded border border-purple-500/30 transition-all text-left flex items-center gap-1.5">
+                        <button onclick="setSample(2)" class="text-[11px] font-mono bg-cyber-800 hover:bg-cyber-700 text-purple-300 p-2 rounded border border-purple-500/30 transition-all text-left flex items-center gap-1.5 cursor-pointer">
                             <i data-lucide="user-x" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> Soxta Rahbar (Boss)
                         </button>
-                        <button onclick="setSample(3)" class="text-[11px] font-mono bg-cyber-800 hover:bg-cyber-700 text-amber-300 p-2 rounded border border-amber-500/30 transition-all text-left flex items-center gap-1.5">
+                        <button onclick="setSample(3)" class="text-[11px] font-mono bg-cyber-800 hover:bg-cyber-700 text-amber-300 p-2 rounded border border-amber-500/30 transition-all text-left flex items-center gap-1.5 cursor-pointer">
                             <i data-lucide="vote" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> Telegram Ovoz Berish
                         </button>
-                        <button onclick="setSample(4)" class="text-[11px] font-mono bg-cyber-800 hover:bg-cyber-700 text-red-300 p-2 rounded border border-red-500/30 transition-all text-left flex items-center gap-1.5">
+                        <button onclick="setSample(4)" class="text-[11px] font-mono bg-cyber-800 hover:bg-cyber-700 text-red-300 p-2 rounded border border-red-500/30 transition-all text-left flex items-center gap-1.5 cursor-pointer">
                             <i data-lucide="gavel" class="w-3.5 h-3.5 text-red-400 shrink-0"></i> Soxta MIB / Jarima
                         </button>
-                        <button onclick="setSample(5)" class="text-[11px] font-mono bg-cyber-800 hover:bg-cyber-700 text-emerald-300 p-2 rounded border border-emerald-500/30 transition-all text-left flex items-center gap-1.5">
+                        <button onclick="setSample(5)" class="text-[11px] font-mono bg-cyber-800 hover:bg-cyber-700 text-emerald-300 p-2 rounded border border-emerald-500/30 transition-all text-left flex items-center gap-1.5 cursor-pointer">
                             <i data-lucide="truck" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> Kuryer (Xavfsiz)
                         </button>
-                        <button onclick="setSample(6)" class="text-[11px] font-mono bg-cyber-800 hover:bg-cyber-700 text-cyan-300 p-2 rounded border border-cyan-500/30 transition-all text-left flex items-center gap-1.5">
+                        <button onclick="setSample(6)" class="text-[11px] font-mono bg-cyber-800 hover:bg-cyber-700 text-cyan-300 p-2 rounded border border-cyan-500/30 transition-all text-left flex items-center gap-1.5 cursor-pointer">
                             <i data-lucide="key-round" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i> Bank OTP (Xavfsiz)
                         </button>
                     </div>
@@ -288,7 +288,7 @@
                         <span class="font-bold tracking-wide uppercase text-xs font-mono flex items-center gap-2" id="adviceTitle">
                             <i id="adviceIcon" data-lucide="alert-octagon" class="w-4 h-4"></i> TAVSIYA ETILADIGAN HARAKATLAR REJASI
                         </span>
-                        <button onclick="copyAnalysisReport()" title="Tahlil hisobotidan nusxa olish" class="px-2.5 py-1 bg-cyber-800 hover:bg-cyber-700 rounded text-xs font-mono text-slate-300 hover:text-white transition-all flex items-center gap-1 border border-cyber-border">
+                        <button onclick="copyAnalysisReport()" title="Tahlil hisobotidan nusxa olish" class="px-2.5 py-1 bg-cyber-800 hover:bg-cyber-700 rounded text-xs font-mono text-slate-300 hover:text-white transition-all flex items-center gap-1 border border-cyber-border cursor-pointer">
                             <i data-lucide="copy" class="w-3.5 h-3.5"></i> Nusxa Olish
                         </button>
                     </div>
@@ -362,7 +362,7 @@
             charCounter.innerText = `${messageInput.value.length} ta belgi`;
         }
 
-        // 3. Asosiy tahlil funksiyasi
+        // 3. Asosiy tahlil funksiyasi (Sintaktik xatolarsiz)
         async function analyzeMessage() {
             const rawText = messageInput.value.trim();
             if (!rawText) {
@@ -388,8 +388,7 @@
                 renderForensicReport(data, rawText);
 
             } catch (error) {
-                alert("Render serveri bilan bog'lanishda kechikish bo'ldi!
-Eslatma: Render bepul rejimida uxlab qolgan bo'lsa, uyg'onishi uchun 30-40 soniya ketadi. Qayta urinib ko'ring.");
+                alert("Render serveri bilan bog'lanishda kechikish bo'ldi!\nEslatma: Render bepul rejimida uxlab qolgan bo'lsa, uyg'onishi uchun 30-40 soniya ketadi. Qayta urinib ko'ring.");
                 console.error("SOC Client Error:", error);
             } finally {
                 analyzeBtn.disabled = false;
@@ -468,7 +467,7 @@ Eslatma: Render bepul rejimida uxlab qolgan bo'lsa, uyg'onishi uchun 30-40 soniy
             };
         }
 
-        // B) Aniq Tahdid Taksomomiyasi
+        // B) Aniq Tahdid Taksonomiyasi
         function classifyThreatTaxonomy(lower, originalText, isThreat) {
             if (!isThreat) {
                 if (/tasdiqlash kodi|hech kimga aytmang|amal qilish muddati/i.test(lower)) {
@@ -607,7 +606,7 @@ Eslatma: Render bepul rejimida uxlab qolgan bo'lsa, uyg'onishi uchun 30-40 soniy
             const iocs = [];
 
             // Karta raqamlari
-            const cardMatch = text.match(/(8600|9860|5614|6262)[\d\s\*]{8,22}/);
+            const cardMatch = text.match(/\b(8600|9860|5614|6262)[\d\s\*]{8,22}/);
             if (cardMatch) {
                 tokens.push(`<CARD: ${cardMatch[1]}... >`);
                 iocs.push({
@@ -618,7 +617,7 @@ Eslatma: Render bepul rejimida uxlab qolgan bo'lsa, uyg'onishi uchun 30-40 soniy
             }
 
             // Havolalar
-            const urlMatch = text.match(/https?:\/\/\S+|www\.\S+|\S+\.(?:top|xyz|link|site|biz|ru|com|uz|info|online)\/?\S*/i);
+            const urlMatch = text.match(/https?:\/\/\S+|www\.\S+|\b\S+\.(?:top|xyz|link|site|biz|ru|com|uz|info|online)\b\/?\S*/i);
             if (urlMatch) {
                 tokens.push(`<URL: ${urlMatch[0].substring(0, 25)}... >`);
                 const isUntrusted = /\.(top|xyz|link|site|biz|online|cc|vip)/i.test(urlMatch[0]);
