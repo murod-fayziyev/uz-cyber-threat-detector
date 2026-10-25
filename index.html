@@ -55,6 +55,7 @@ h2{font-size:1.1rem;margin:26px 0 10px}
 details{margin-top:20px;color:var(--mute);font-size:.9rem}summary{cursor:pointer}
 footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--mute);font-size:.85rem}
 .band{height:46px;background-color:var(--band);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.38' stroke-width='1.2'%3E%3Crect x='8' y='8' width='24' height='24'/%3E%3Crect x='8' y='8' width='24' height='24' transform='rotate(45 20 20)'/%3E%3Ccircle cx='20' cy='20' r='3'/%3E%3C/g%3E%3C/svg%3E");border-bottom:3px solid var(--amb)}
+.saved{margin:-6px 0 16px;font-size:.88rem;color:var(--mute)}.saved.ok::before{content:"✓ ";color:var(--grn);font-weight:700}
 </style>
 </head>
 <body>
@@ -73,6 +74,7 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--mute);fo
       <div class="slip msg"><span class="stamp" id="stamp"></span><span id="msg"></span></div>
       <p class="verdict" id="v"></p>
       <p class="cat" id="cat"></p>
+      <p class="saved" id="saved"></p>
       <div class="scale" role="img" aria-label="Xavf darajasi"><i id="mk"></i></div>
       <div class="sl"><span>Xavfsiz</span><span>Xavfli</span></div>
       <div id="rbox"><h2>Topilgan xavfli belgilar</h2><ul class="flags" id="reasons"></ul></div>
@@ -112,6 +114,8 @@ $("go").onclick=async()=>{
     $("stamp").classList.add(d.verdict);$("v").classList.add(d.verdict);
     $("stamp").classList.remove("go-anim");void $("stamp").offsetWidth;$("stamp").classList.add("go-anim");
     $("stamp").textContent=STAMP[d.verdict];$("v").textContent=LABEL[d.verdict];$("cat").textContent=d.category;
+    const sv=$("saved");sv.className="saved"+(d.saved?" ok":"");
+    sv.textContent=d.saved?(d.seen>1?`Bu xabar ${d.seen} marta tekshirilgan. Anonim saqlandi.`:"Xabar anonim saqlandi."):"Xabar saqlanmadi: server bazaga ulana olmadi.";
     $("mk").style.left=Math.max(2,Math.min(98,d.score))+"%";
     showMsg(text,d.details);
     $("rbox").hidden=!d.reasons.length;fill($("reasons"),d.reasons);fill($("actions"),d.actions);
