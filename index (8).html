@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ogoh: xabarni ishonishdan oldin tekshiring</title>
+<meta name="description" content="Kelgan SMS yoki Telegram xabarini bepul tekshiring. Firibgarlik belgilarini topib, nima qilishni tushuntirib beramiz.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e6f0ee;--paper:#fbfcfa;--ink:#12233f;--mute:#4f6270;--line:#c5d6d3;--brand:#0a7a86;--band:#0a7a86;--red:#b3202f;--amb:#a86d00;--grn:#1e7b4b;--mk:#ffd86b;--btn:#12233f;--btnink:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#0b1a1d;--paper:#142428;--ink:#e6f1ef;--mute:#9bb5b3;--line:#27403f;--brand:#5fd0dc;--band:#0d4d56;--red:#ff7f8c;--amb:#ffc15e;--grn:#5fd392;--mk:#6b5a00;--btn:#e6f1ef;--btnink:#0b1a1d}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 Onest,"Segoe UI",system-ui,sans-serif}
+.wrap{max-width:680px;margin:0 auto;padding:0 18px}
+header{padding:18px 0;display:flex;align-items:center;gap:10px;font-weight:700}
+header svg{width:26px;height:26px;color:var(--brand)}
+h1{font-size:clamp(2rem,7vw,3rem);line-height:1.08;letter-spacing:-.02em;font-weight:800;margin:18px 0 12px}
+.lead{color:var(--mute);margin:0 0 22px;max-width:52ch}
+.slip{background:var(--paper);border:1px solid var(--line);border-radius:6px;box-shadow:0 1px 0 var(--line),0 14px 30px -18px rgba(15,27,45,.35)}
+textarea{display:block;width:100%;min-height:160px;padding:16px 18px;font:inherit;color:inherit;background:transparent;border:0;resize:vertical;border-radius:6px}
+textarea:focus-visible{outline:3px solid var(--brand);outline-offset:-3px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:14px 0 6px}
+.go{font:inherit;font-weight:700;font-size:1.05rem;cursor:pointer;border:0;border-radius:8px;padding:14px 26px;background:var(--btn);color:var(--btnink)}
+.go:focus-visible,.alt:focus-visible,summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+.go:disabled{opacity:.55;cursor:wait}
+.trust{display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--mute);font-size:.88rem;margin:0;padding:0;list-style:none}
+.trust li::before{content:"✓ ";color:var(--grn);font-weight:700}
+#err{color:var(--red);font-weight:500;min-height:1.5em;margin:8px 0 0}
+#res{margin:26px 0 60px}
+.msg{position:relative;padding:22px 18px 26px;white-space:pre-wrap;word-break:break-word;font-size:1rem}
+.msg mark{background:var(--mk);color:inherit;padding:0 3px;border-radius:3px;font-weight:700}
+.stamp{position:absolute;right:14px;top:-18px;transform:rotate(-7deg);padding:6px 16px;border:4px solid currentColor;border-radius:8px;box-shadow:inset 0 0 0 2px var(--paper),inset 0 0 0 4px currentColor;font-weight:800;font-size:1.5rem;letter-spacing:.08em;background:var(--paper);opacity:.96}
+.stamp.go-anim{animation:press .35s cubic-bezier(.2,1.4,.4,1)}
+@keyframes press{from{transform:rotate(-7deg) scale(1.9);opacity:0}to{transform:rotate(-7deg) scale(1);opacity:.96}}
+@media(prefers-reduced-motion:reduce){.stamp.go-anim{animation:none}}
+.xavfli{color:var(--red)}.shubhali{color:var(--amb)}.xavfsiz{color:var(--grn)}
+.verdict{margin:22px 0 4px;font-size:1.5rem;font-weight:800;line-height:1.25}
+.cat{margin:0 0 16px;color:var(--mute)}
+.scale{position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,#1e7b4b 0 20%,#7a9a2b 20% 40%,#d39a12 40% 60%,#d9631f 60% 80%,#c62828 80%)}
+.scale i{position:absolute;top:-6px;width:4px;height:22px;margin-left:-2px;border-radius:2px;background:var(--ink);box-shadow:0 0 0 3px var(--bg);transition:left .6s}
+.sl{display:flex;justify-content:space-between;color:var(--mute);font-size:.82rem;margin:8px 0 26px}
+h2{font-size:1.1rem;margin:26px 0 10px}
+.flags,.steps{margin:0;padding:0;list-style:none}
+.flags li{padding:10px 0 10px 28px;border-top:1px solid var(--line);position:relative}
+.flags li::before{content:"";position:absolute;left:4px;top:18px;width:10px;height:10px;border-radius:50%;background:var(--red)}
+.steps{counter-reset:s}
+.steps li{counter-increment:s;padding:10px 0 10px 40px;border-top:1px solid var(--line);position:relative}
+.steps li::before{content:counter(s);position:absolute;left:0;top:10px;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);font-weight:700;font-size:.85rem;display:grid;place-items:center}
+.vote{margin-top:30px;padding:18px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+.vote b{display:block;margin-bottom:10px}
+.alt{font:inherit;font-weight:500;cursor:pointer;margin:0 8px 8px 0;padding:10px 16px;border-radius:8px;border:1.5px solid var(--ink);background:transparent;color:var(--ink)}
+.alt:hover:not(:disabled){background:var(--ink);color:var(--bg)}.alt:disabled{opacity:.45;cursor:default}
+#vmsg{margin:4px 0 0;color:var(--mute);font-size:.92rem}
+details{margin-top:20px;color:var(--mute);font-size:.9rem}summary{cursor:pointer}
+footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--mute);font-size:.85rem}
+.band{height:46px;background-color:var(--band);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.38' stroke-width='1.2'%3E%3Crect x='8' y='8' width='24' height='24'/%3E%3Crect x='8' y='8' width='24' height='24' transform='rotate(45 20 20)'/%3E%3Ccircle cx='20' cy='20' r='3'/%3E%3C/g%3E%3C/svg%3E");border-bottom:3px solid var(--amb)}
+</style>
+</head>
+<body>
+<div class="band" aria-hidden="true"></div>
+<div class="wrap">
+  <header><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 7.9-8 9-4.8-1.1-8-4.5-8-9V6z"/><path d="M8.5 12.2l2.4 2.4 4.6-4.8"/></svg>Ogoh</header>
+  <main>
+    <h1>Ishonishdan oldin tekshiring</h1>
+    <p class="lead">Assalomu alaykum! Kelgan xabarni shu yerga joylang. Firibgarlik belgilarini topib, nima qilishni tushuntirib beramiz.</p>
+    <div class="slip"><textarea id="t" maxlength="1500" aria-label="Xabar matni" placeholder="Masalan: Kartangiz bloklandi, tasdiqlash uchun havolaga kiring..."></textarea></div>
+    <div class="row"><button class="go" id="go">Tekshirish</button></div>
+    <ul class="trust"><li>Bepul</li><li>Ro'yxatdan o'tish shart emas</li><li>Karta va telefon raqamlari yashiriladi</li></ul>
+    <div id="err" role="alert"></div>
+
+    <section id="res" hidden aria-live="polite">
+      <div class="slip msg"><span class="stamp" id="stamp"></span><span id="msg"></span></div>
+      <p class="verdict" id="v"></p>
+      <p class="cat" id="cat"></p>
+      <div class="scale" role="img" aria-label="Xavf darajasi"><i id="mk"></i></div>
+      <div class="sl"><span>Xavfsiz</span><span>Xavfli</span></div>
+      <div id="rbox"><h2>Topilgan xavfli belgilar</h2><ul class="flags" id="reasons"></ul></div>
+      <h2>Nima qilish kerak</h2><ol class="steps" id="actions"></ol>
+      <div class="vote" id="vote"><b>Natija to'g'rimi? Bu xabar aslida:</b>
+        <button class="alt" data-v="spam">Firibgarlik</button><button class="alt" data-v="safe">Oddiy xabar</button><button class="alt" data-v="unsure">Bilmayman</button>
+        <p id="vmsg"></p></div>
+      <details><summary>Texnik tafsilotlar</summary><p id="det"></p></details>
+    </section>
+  </main>
+  <footer>Natija taxminiy, mutlaq kafolat emas. Shubhangiz qolsa, bankning rasmiy raqamiga o'zingiz qo'ng'iroq qiling.</footer>
+</div>
+<script>
+const API="https://uz-spam-api.onrender.com";
+const $=id=>document.getElementById(id);
+const LABEL={xavfli:"Ehtiyot bo'ling, bu firibgarlikka o'xshaydi",shubhali:"Shoshilmang, xabar shubhali",xavfsiz:"Xavfli belgilar topilmadi"};
+const STAMP={xavfli:"XAVFLI",shubhali:"SHUBHALI",xavfsiz:"XAVFSIZ"};
+let hash=null,cid="";
+try{cid=localStorage.getItem("cid")||"";if(cid.length<8){cid=crypto.randomUUID();localStorage.setItem("cid",cid)}}catch(e){cid=cid||String(Math.random()).slice(2)+Date.now()}
+const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+function fill(el,items){el.replaceChildren(...items.map(s=>{const li=document.createElement("li");li.textContent=s;return li}))}
+function showMsg(text,d){
+  const pats=["(?:\\d{4}[\\s-]?){3}\\d{4}"];if(d.domain)pats.unshift(esc(d.domain));
+  const parts=text.split(new RegExp("("+pats.join("|")+")","gi"));
+  $("msg").replaceChildren(...parts.map((p,i)=>{if(i%2){const m=document.createElement("mark");m.textContent=p;return m}return document.createTextNode(p)}));
+}
+$("go").onclick=async()=>{
+  const text=$("t").value.trim();$("err").textContent="";
+  if(!text){$("err").textContent="Avval xabar matnini kiriting.";return}
+  const b=$("go");b.disabled=true;b.textContent="Tekshirilmoqda...";
+  try{
+    const r=await fetch(API+"/predict",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text})});
+    const d=await r.json();
+    if(!r.ok)throw new Error(typeof d.detail==="string"?d.detail:"Matnni tekshirib, qayta urinib ko'ring.");
+    hash=d.text_hash;$("res").hidden=false;
+    ["xavfli","shubhali","xavfsiz"].forEach(c=>{$("stamp").classList.remove(c);$("v").classList.remove(c)});
+    $("stamp").classList.add(d.verdict);$("v").classList.add(d.verdict);
+    $("stamp").classList.remove("go-anim");void $("stamp").offsetWidth;$("stamp").classList.add("go-anim");
+    $("stamp").textContent=STAMP[d.verdict];$("v").textContent=LABEL[d.verdict];$("cat").textContent=d.category;
+    $("mk").style.left=Math.max(2,Math.min(98,d.score))+"%";
+    showMsg(text,d.details);
+    $("rbox").hidden=!d.reasons.length;fill($("reasons"),d.reasons);fill($("actions"),d.actions);
+    const x=d.details;
+    $("det").textContent=`Xavf bahosi: ${Math.round(d.score)}%. Neyron model: ${x.model}%, qoidalar: ${x.rules}%. Domen: ${x.domain||"yo'q"}. Karta: ${x.card||"yo'q"}.`;
+    $("vmsg").textContent="";document.querySelectorAll(".alt").forEach(e=>e.disabled=false);
+    $("res").scrollIntoView({behavior:"smooth",block:"start"});
+  }catch(e){
+    $("err").textContent=e instanceof TypeError?"Server uyg'onmoqda yoki aloqa yo'q. 30 soniyadan keyin qayta urinib ko'ring.":e.message;
+  }finally{b.disabled=false;b.textContent="Tekshirish"}
+};
+document.querySelectorAll(".alt").forEach(el=>el.onclick=async()=>{
+  try{
+    const r=await fetch(API+"/feedback",{method:"POST",headers:{"Content-Type":"application/json","X-Client-Id":cid},body:JSON.stringify({text_hash:hash,vote:el.dataset.v})});
+    const d=await r.json();if(!r.ok)throw new Error(d.detail||"Xatolik");
+    $("vmsg").textContent="Rahmat! Javobingiz saqlandi.";document.querySelectorAll(".alt").forEach(b=>b.disabled=true);
+  }catch(e){$("vmsg").textContent=e.message}
+});
+</script>
+</body>
+</html>
