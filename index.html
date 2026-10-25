@@ -80,8 +80,9 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--mute);fo
       <div class="sl"><span>Xavfsiz</span><span>Xavfli</span></div>
       <div id="rbox"><h2>Topilgan xavfli belgilar</h2><ul class="flags" id="reasons"></ul></div>
       <h2>Nima qilish kerak</h2><ol class="steps" id="actions"></ol>
-      <div class="vote" id="vote"><b>Natija to'g'rimi? Bu xabar aslida:</b>
-        <button class="alt" data-v="spam">Firibgarlik</button><button class="alt" data-v="safe">Oddiy xabar</button><button class="alt" data-v="unsure">Bilmayman</button>
+      <div class="vote" id="vote"><b>Natija noto'g'ri deb o'ylaysizmi?</b>
+        <button class="alt" id="wrong">Model xato qildi</button>
+        <div id="ask" hidden><p>Aslida bu xabar:</p><button class="alt" data-v="spam">Firibgarlik</button><button class="alt" data-v="safe">Oddiy xabar</button></div>
         <p id="vmsg"></p></div>
       <details><summary>Texnik tafsilotlar</summary><p id="det"></p></details>
     </section>
@@ -93,7 +94,7 @@ const API="https://uz-spam-api.onrender.com";
 const $=id=>document.getElementById(id);
 const LABEL={xavfli:"Ehtiyot bo'ling, bu firibgarlikka o'xshaydi",shubhali:"Shoshilmang, xabar shubhali",xavfsiz:"Xavfli belgilar topilmadi"};
 const STAMP={xavfli:"XAVFLI",shubhali:"SHUBHALI",xavfsiz:"XAVFSIZ"};
-let hash=null,cid="";
+let hash=null,cid="",lastScore=0;
 try{cid=localStorage.getItem("cid")||"";if(cid.length<8){cid=crypto.randomUUID();localStorage.setItem("cid",cid)}}catch(e){cid=cid||String(Math.random()).slice(2)+Date.now()}
 const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
 function fill(el,items){el.replaceChildren(...items.map(s=>{const li=document.createElement("li");li.textContent=s;return li}))}
@@ -124,20 +125,25 @@ $("go").onclick=async()=>{
     $("rbox").hidden=!d.reasons.length;fill($("reasons"),d.reasons);fill($("actions"),d.actions);
     const x=d.details;
     $("det").textContent=`Xavf bahosi: ${Math.round(d.score)}%. Neyron model: ${x.model}%, qoidalar: ${x.rules}%. Domen: ${x.domain||"yo'q"}. Karta: ${x.card||"yo'q"}.`;
-    $("vmsg").textContent="";document.querySelectorAll(".alt").forEach(e=>e.disabled=false);
+    $("vmsg").textContent="";$("ask").hidden=true;lastScore=d.score;document.querySelectorAll(".alt").forEach(e=>e.disabled=false);
     $("res").scrollIntoView({behavior:"smooth",block:"start"});
   }catch(e){
     console.error(e);$("res").hidden=true;
     $("err").textContent=(!got&&e instanceof TypeError)?"Server uyg'onmoqda yoki aloqa yo'q. 30 soniyadan keyin qayta urinib ko'ring.":e.message;
   }finally{b.disabled=false;b.textContent="Tekshirish"}
 };
-document.querySelectorAll(".alt").forEach(el=>el.onclick=async()=>{
+async function sendVote(v){
   try{
-    const r=await fetch(API+"/feedback",{method:"POST",headers:{"Content-Type":"application/json","X-Client-Id":cid},body:JSON.stringify({text_hash:hash,vote:el.dataset.v})});
+    const r=await fetch(API+"/feedback",{method:"POST",headers:{"Content-Type":"application/json","X-Client-Id":cid},body:JSON.stringify({text_hash:hash,vote:v})});
     const d=await r.json();if(!r.ok)throw new Error(d.detail||"Xatolik");
-    $("vmsg").textContent="Rahmat! Javobingiz saqlandi.";document.querySelectorAll(".alt").forEach(b=>b.disabled=true);
+    $("vmsg").textContent="Rahmat! Xabaringiz qabul qilindi.";$("ask").hidden=true;document.querySelectorAll(".alt").forEach(b=>b.disabled=true);
   }catch(e){$("vmsg").textContent=e.message}
-});
+}
+$("wrong").onclick=()=>{
+  if(lastScore<=20||lastScore>=80)sendVote(lastScore>=50?"safe":"spam");
+  else{$("ask").hidden=false;$("vmsg").textContent=""}
+};
+document.querySelectorAll("#ask .alt").forEach(el=>el.onclick=()=>sendVote(el.dataset.v));
 </script>
 </body>
 </html>
