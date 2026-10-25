@@ -56,6 +56,7 @@ details{margin-top:20px;color:var(--mute);font-size:.9rem}summary{cursor:pointer
 footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--mute);font-size:.85rem}
 .band{height:46px;background-color:var(--band);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.38' stroke-width='1.2'%3E%3Crect x='8' y='8' width='24' height='24'/%3E%3Crect x='8' y='8' width='24' height='24' transform='rotate(45 20 20)'/%3E%3Ccircle cx='20' cy='20' r='3'/%3E%3C/g%3E%3C/svg%3E");border-bottom:3px solid var(--amb)}
 .saved{margin:-6px 0 16px;font-size:.88rem;color:var(--mute)}.saved.ok::before{content:"✓ ";color:var(--grn);font-weight:700}
+.vrow{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin:22px 0 4px}.vrow .verdict{margin:0}.pct{font-size:2.2rem;font-weight:800;line-height:1;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -72,7 +73,7 @@ footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--mute);fo
 
     <section id="res" hidden aria-live="polite">
       <div class="slip msg"><span class="stamp" id="stamp"></span><span id="msg"></span></div>
-      <p class="verdict" id="v"></p>
+      <div class="vrow"><p class="verdict" id="v"></p><div class="pct" id="pct" aria-label="Xavf foizi"></div></div>
       <p class="cat" id="cat"></p>
       <p class="saved" id="saved"></p>
       <div class="scale" role="img" aria-label="Xavf darajasi"><i id="mk"></i></div>
@@ -104,14 +105,16 @@ function showMsg(text,d){
 $("go").onclick=async()=>{
   const text=$("t").value.trim();$("err").textContent="";
   if(!text){$("err").textContent="Avval xabar matnini kiriting.";return}
-  const b=$("go");b.disabled=true;b.textContent="Tekshirilmoqda...";
+  const b=$("go");b.disabled=true;b.textContent="Tekshirilmoqda...";let got=false;
   try{
     const r=await fetch(API+"/predict",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text})});
-    const d=await r.json();
+    const d=await r.json();got=true;
     if(!r.ok)throw new Error(typeof d.detail==="string"?d.detail:"Matnni tekshirib, qayta urinib ko'ring.");
+    if(!d.verdict)throw new Error("Server eski versiyada ishlayapti. Render da yangi main.py ni joylab, qayta deploy qiling.");
     hash=d.text_hash;$("res").hidden=false;
-    ["xavfli","shubhali","xavfsiz"].forEach(c=>{$("stamp").classList.remove(c);$("v").classList.remove(c)});
-    $("stamp").classList.add(d.verdict);$("v").classList.add(d.verdict);
+    ["xavfli","shubhali","xavfsiz"].forEach(c=>{$("stamp").classList.remove(c);$("v").classList.remove(c);$("pct").classList.remove(c)});
+    $("stamp").classList.add(d.verdict);$("v").classList.add(d.verdict);$("pct").classList.add(d.verdict);
+    $("pct").textContent=Math.round(d.score)+"%";
     $("stamp").classList.remove("go-anim");void $("stamp").offsetWidth;$("stamp").classList.add("go-anim");
     $("stamp").textContent=STAMP[d.verdict];$("v").textContent=LABEL[d.verdict];$("cat").textContent=d.category;
     const sv=$("saved");sv.className="saved"+(d.saved?" ok":"");
@@ -124,7 +127,8 @@ $("go").onclick=async()=>{
     $("vmsg").textContent="";document.querySelectorAll(".alt").forEach(e=>e.disabled=false);
     $("res").scrollIntoView({behavior:"smooth",block:"start"});
   }catch(e){
-    $("err").textContent=e instanceof TypeError?"Server uyg'onmoqda yoki aloqa yo'q. 30 soniyadan keyin qayta urinib ko'ring.":e.message;
+    console.error(e);$("res").hidden=true;
+    $("err").textContent=(!got&&e instanceof TypeError)?"Server uyg'onmoqda yoki aloqa yo'q. 30 soniyadan keyin qayta urinib ko'ring.":e.message;
   }finally{b.disabled=false;b.textContent="Tekshirish"}
 };
 document.querySelectorAll(".alt").forEach(el=>el.onclick=async()=>{
