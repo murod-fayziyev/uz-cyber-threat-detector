@@ -3,245 +3,646 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uzbek Cyber Threat & Phishing Intelligence</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>UZ-CERT / SOC — Kiber-Tahdid va Fishing Tahlil Platformasi</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: #111827;
-            --border-color: #1f293d;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --accent-safe: #10b981;
-            --accent-threat: #ef4444;
-            --accent-warning: #f59e0b;
-            --accent-blue: #3b82f6;
+            --bg-dark: #070b14;
+            --panel-bg: #0f172a;
+            --panel-sub: #1e293b;
+            --border-color: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --safe: #10b981;
+            --warn: #f59e0b;
+            --danger: #ef4444;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #070b14 70%);
+            color: var(--text-primary);
             margin: 0;
-            padding: 20px;
+            padding: 30px 16px;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
         }
 
-        .container {
+        .soc-wrapper {
             width: 100%;
-            max-width: 800px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            max-width: 920px;
         }
 
-        h1 {
+        /* Top Header */
+        .soc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .brand-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 22px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .brand-title h1 {
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin: 0;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-title p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 3px 0 0 0;
+        }
+
+        .status-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--safe);
+            padding: 6px 12px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--safe);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--safe);
+        }
+
+        /* Main Input Card */
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            margin-bottom: 24px;
+        }
+
+        .input-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 125px;
+            background: #090e1a;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            padding: 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            border-color: var(--accent);
+        }
+
+        /* Validation Alert Banner */
+        #validation-alert {
+            display: none;
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-primary:disabled {
+            background: #334155;
+            cursor: not-allowed;
+        }
+
+        .btn-clear {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 11px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-clear:hover {
+            color: #fff;
+            border-color: #64748b;
+        }
+
+        /* Results Dashboard */
+        #result-dashboard {
+            display: none;
+        }
+
+        .verdict-banner {
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            background: #0b1120;
+        }
+
+        .verdict-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .verdict-title {
+            font-size: 18px;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        p.subtitle {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-top: 0;
-            margin-bottom: 24px;
+        .prob-score {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 700;
         }
 
-        textarea {
+        .progress-track {
             width: 100%;
-            height: 120px;
-            background: #0d1322;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: #fff;
-            padding: 12px;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            resize: vertical;
-            box-sizing: border-box;
-            outline: none;
-        }
-
-        textarea:focus {
-            border-color: var(--accent-blue);
-        }
-
-        .btn-analyze {
-            background: var(--accent-blue);
-            color: #fff;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 12px;
-            transition: opacity 0.2s;
-        }
-
-        .btn-analyze:hover {
-            opacity: 0.9;
-        }
-
-        .btn-analyze:disabled {
-            background: #374151;
-            cursor: not-allowed;
-        }
-
-        /* Natijalar bloki */
-        #result-box {
-            display: none;
-            margin-top: 25px;
-            padding: 20px;
-            background: #0d1322;
-            border-radius: 8px;
-            border-left: 4px solid var(--accent-blue);
-        }
-
-        .gauge-container {
-            margin: 15px 0;
-        }
-
-        .gauge-bar {
-            width: 100%;
-            height: 12px;
-            background: #1f293d;
-            border-radius: 6px;
+            height: 10px;
+            background: #1e293b;
+            border-radius: 99px;
             overflow: hidden;
+            margin: 14px 0;
         }
 
-        .gauge-fill {
+        .progress-fill {
             height: 100%;
             width: 0%;
-            transition: width 0.6s ease;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .ioc-tags {
+        .meta-strip {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* IoC & PII Box */
+        .telemetry-box {
+            background: #090e1a;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .ioc-list {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
-            margin-top: 15px;
+            margin-bottom: 12px;
         }
 
-        .tag {
+        .ioc-badge {
             font-family: 'JetBrains Mono', monospace;
             font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            background: #1f293d;
-            color: #e5e7eb;
+            padding: 5px 10px;
+            border-radius: 6px;
+            background: var(--panel-sub);
+            border: 1px solid #475569;
+            color: #f1f5f9;
         }
 
-        /* Fikr bildirish (Feedback) qismi */
-        .feedback-section {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
+        .masked-preview {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 10px 12px;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent);
+            word-break: break-all;
         }
 
-        .feedback-title {
+        /* Two Column Advisory Grid */
+        .advisory-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .advisory-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sub-panel {
+            background: #0b1120;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .sub-panel h3 {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rec-list {
+            margin: 0;
+            padding-left: 18px;
+            color: #cbd5e1;
+            font-size: 13.5px;
+            line-height: 1.6;
+        }
+
+        .rec-list li {
+            margin-bottom: 8px;
+        }
+
+        .soc-kv {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 10px;
         }
 
-        .feedback-buttons {
+        .kv-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed #1e293b;
+            padding-bottom: 6px;
+            gap: 10px;
+        }
+
+        .kv-label {
+            color: var(--text-secondary);
+        }
+
+        .kv-val {
+            font-family: 'JetBrains Mono', monospace;
+            color: #f8fafc;
+            text-align: right;
+            font-size: 12px;
+        }
+
+        /* Feedback Section */
+        .feedback-bar {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .feedback-info {
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+
+        .feedback-info span {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .vote-btns {
             display: flex;
             gap: 10px;
         }
 
-        .btn-feedback {
-            background: #1f293d;
+        .btn-vote {
+            background: var(--panel-sub);
             border: 1px solid var(--border-color);
-            color: #fff;
+            color: var(--text-primary);
             padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
+            border-radius: 8px;
             font-size: 13px;
-            transition: background 0.2s;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .btn-feedback:hover {
-            background: #374151;
+        .btn-vote:hover:not(:disabled) {
+            border-color: var(--accent);
+            background: #334155;
         }
 
-        .btn-feedback:disabled {
-            opacity: 0.5;
+        .btn-vote:disabled {
+            opacity: 0.55;
             cursor: not-allowed;
         }
 
-        #feedback-status {
-            font-size: 13px;
-            margin-top: 8px;
-            color: var(--accent-safe);
+        .vote-count {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            background: #090e1a;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        #feedback-toast {
+            width: 100%;
+            font-size: 12.5px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--safe);
+            margin-top: 6px;
             display: none;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🛡️ Kiber-Tahdid va Fishing Tahlili</h1>
-    <p class="subtitle">Bi-LSTM Attention & Supabase Threat Vault integratsiyasi</p>
+<div class="soc-wrapper">
+    <!-- Header -->
+    <div class="soc-header">
+        <div class="brand-title">
+            <div class="brand-icon">🛡️</div>
+            <div>
+                <h1>UZ-SOC Threat Intelligence & Phishing Analyzer</h1>
+                <p>Bi-LSTM Neyron Tarmog'i va Supabase Kiber-Ombor Integratsiyasi</p>
+            </div>
+        </div>
+        <div class="status-pill">
+            <span class="pulse-dot"></span>
+            <span>DATA FILTER & VAULT: ACTIVE</span>
+        </div>
+    </div>
 
-    <textarea id="msg-input" placeholder="Shubhali SMS, Telegram xabari yoki havolani shu yerga joylang..."></textarea>
-    <br>
-    <button class="btn-analyze" id="analyze-btn" onclick="analyzeText()">Tahlil qilish</button>
-
-    <!-- Natija ekrani -->
-    <div id="result-box">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <strong id="verdict-text" style="font-size: 16px;">Tahlil yakunlandi</strong>
-            <span id="prob-badge" style="font-family: 'JetBrains Mono'; font-weight: 700;">0%</span>
+    <!-- Input Card -->
+    <div class="card">
+        <div class="input-label">
+            <span>TEKSHIRILAYOTGAN XABAR MATNI (KAMIDA 3 TA SO'Z KIRITING)</span>
+            <span id="word-counter" style="font-family: 'JetBrains Mono'; color: var(--text-secondary);">So'zlar: 0 (Min: 3)</span>
         </div>
 
-        <div class="gauge-container">
-            <div class="gauge-bar">
-                <div class="gauge-fill" id="gauge-fill"></div>
+        <textarea id="msg-input" oninput="updateWordCount()" placeholder="Tekshirish uchun shubhali SMS, Telegram xabari yoki havolani shu yerga kiriting..."></textarea>
+
+        <!-- Data Hygiene Ogohlantirish bloki -->
+        <div id="validation-alert"></div>
+
+        <div class="action-bar">
+            <button class="btn-primary" id="analyze-btn" onclick="analyzeMessage()">
+                <span>🔍 Kiber-Tahlilni Boshlash</span>
+            </button>
+            <button class="btn-clear" onclick="clearInput()">Tozalash</button>
+        </div>
+    </div>
+
+    <!-- Results Dashboard -->
+    <div class="card" id="result-dashboard">
+        <div class="verdict-banner" id="verdict-banner">
+            <div class="verdict-top">
+                <div class="verdict-title" id="verdict-title">Tahlil natijasi</div>
+                <div class="prob-score" id="prob-score">0%</div>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="meta-strip">
+                <span id="basis-label">Tahlil asosi: -</span>
+                <span id="occurrence-badge" style="font-family: 'JetBrains Mono';">👁️ Bazada uchrashi: 1 marta</span>
             </div>
         </div>
 
-        <div style="font-size: 13px; color: var(--text-muted);" id="basis-text">Xulosa asosi: -</div>
-
-        <!-- IoC parametrlari -->
-        <div class="ioc-tags" id="ioc-container"></div>
-
-        <!-- Fikr bildirish / Active learning saralash -->
-        <div class="feedback-section">
-            <div class="feedback-title">Model xulosasi to'g'rimi? Fikringiz modelni o'qitish bazasiga yoziladi:</div>
-            <div class="feedback-buttons">
-                <button class="btn-feedback" id="btn-correct" onclick="sendFeedback('correct')">✅ To'g'ri baholandi</button>
-                <button class="btn-feedback" id="btn-incorrect" onclick="sendFeedback('incorrect')">❌ Xato (Adashdi)</button>
+        <div class="telemetry-box">
+            <div class="ioc-list" id="ioc-container"></div>
+            <div class="masked-preview" id="masked-preview">
+                🔒 Bazaga yozilgan xavfsiz shakl (PII Masking): -
             </div>
-            <div id="feedback-status"></div>
+        </div>
+
+        <div class="advisory-grid">
+            <div class="sub-panel">
+                <h3>📋 Fuqarolar uchun amaliy harakatlar rejasi</h3>
+                <ol class="rec-list" id="rec-list"></ol>
+            </div>
+
+            <div class="sub-panel">
+                <h3>🔬 SOC Texnik Kiber-Xulosasi</h3>
+                <div class="soc-kv">
+                    <div class="kv-row">
+                        <span class="kv-label">Tahdid toifasi:</span>
+                        <span class="kv-val" id="soc-category">-</span>
+                    </div>
+                    <div class="kv-row">
+                        <span class="kv-label">Hujum vektori:</span>
+                        <span class="kv-val" id="soc-vector">-</span>
+                    </div>
+                    <div class="kv-row">
+                        <span class="kv-label">Joriy savat (Vault):</span>
+                        <span class="kv-val" id="soc-basket">inference_raw_logs</span>
+                    </div>
+                    <div class="kv-row">
+                        <span class="kv-label">SHA-256 Hesh:</span>
+                        <span class="kv-val" id="soc-hash">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="feedback-bar">
+            <div class="feedback-info">
+                <strong>Active Learning: Model xulosasi to'g'rimi?</strong>
+                <span>Sizning bahoyingiz xabarni 5 ta kiber-savatdan biriga saralaydi</span>
+            </div>
+            <div class="vote-btns">
+                <button class="btn-vote" id="btn-correct" onclick="sendFeedback('correct')">
+                    ✅ To'g'ri <span class="vote-count" id="count-correct">0</span>
+                </button>
+                <button class="btn-vote" id="btn-incorrect" onclick="sendFeedback('incorrect')">
+                    ❌ Xato (Adashdi) <span class="vote-count" id="count-incorrect">0</span>
+                </button>
+            </div>
+            <div id="feedback-toast"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // RENDER SERVERINGIZNING ANIQ HAVOLASINI SHU YERGA YOZING
-    const BACKEND_URL = "https://uz-spam-api.onrender.com"; 
+    const BACKEND_URL = "https://uz-spam-api.onrender.com";
+    let currentHash = null;
 
-    let currentTextHash = null;
+    const VOWEL_REGEX = /[aeiouyўаеёиоуыэюяAEIOUYЎАЕЁИОУЫЭЮЯ]/;
+    const SMASH_PATTERNS = ["qwert", "asdfg", "zxcvb", "yuiop", "hjkl", "йцуке", "фывап", "ячсми", "1234567"];
 
-    async function analyzeText() {
+    function extractValidWords(text) {
+        const withoutUrls = text.replace(/https?:\/\/\S+|www\.\S+/g, " ");
+        const matches = withoutUrls.match(/[a-zA-Zа-яА-ЯўқғҳЎҚҒҲёЁ]+(?:['ʻʼ`][a-zA-Zа-яА-ЯўқғҳЎҚҒҲёЁ]+)?/g) || [];
+        return matches.filter(w => w.length >= 2);
+    }
+
+    function updateWordCount() {
+        const text = document.getElementById("msg-input").value;
+        const words = extractValidWords(text);
+        const counter = document.getElementById("word-counter");
+        counter.innerText = `So'zlar: ${words.length} (Min: 3)`;
+        counter.style.color = words.length >= 3 ? "var(--safe)" : "var(--warn)";
+        document.getElementById("validation-alert").style.display = "none";
+    }
+
+    function validateClientSide(text) {
+        if (text.length < 10) {
+            return "Matn juda qisqa. Tahlil qilish uchun to'liqroq xabar kiriting.";
+        }
+
+        const validWords = extractValidWords(text);
+        if (validWords.length < 3) {
+            return "Kiritilgan matn 3 ta so'zdan kam! Ma'lumotlar bazasini toza saqlash maqsadida 3 ta so'zdan kam xabarlar qabul qilinmaydi va bazaga yozilmaydi.";
+        }
+
+        const lower = text.toLowerCase();
+        for (const pat of SMASH_PATTERNS) {
+            if (lower.includes(pat)) {
+                return "Tasodifiy terilgan klaviatura harflari (keyboard smash) aniqlandi! Iltimos, haqiqiy xabar matnini kiriting (bazaga yozilmadi).";
+            }
+        }
+
+        if (/([a-zA-Zа-яА-Яўқғҳё])\1{3,}/i.test(text)) {
+            return "Matnda ma'nosiz takrorlanuvchi harflar ketma-ketligi aniqlandi! Bunday matnlar bazaga yozilmaydi.";
+        }
+
+        const nonSpace = text.replace(/\s+/g, "");
+        const letters = text.match(/[a-zA-Zа-яА-ЯўқғҳЎҚҒҲёЁ]/g) || [];
+        if (letters.length / Math.max(nonSpace.length, 1) < 0.40) {
+            return "Matnda harflardan ko'ra tasodifiy simvollar yoki raqamlar haddan tashqari ko'p (bazaga yozilmadi).";
+        }
+
+        const wordsWithVowels = validWords.filter(w => VOWEL_REGEX.test(w)).length;
+        if (wordsWithVowels < 3 || (wordsWithVowels / validWords.length) < 0.60) {
+            return "Kiritilgan matn ma'nosiz harflar yig'indisidan (gibberish) iborat! Tasodifiy belgilar bazaga yozilmaydi.";
+        }
+
+        return null;
+    }
+
+    function showValidationError(msg) {
+        const alertBox = document.getElementById("validation-alert");
+        alertBox.innerHTML = `<strong>🛡️ Kiber-Filtr (Bazaga yozilmadi):</strong> ${msg}`;
+        alertBox.style.display = "block";
+        document.getElementById("result-dashboard").style.display = "none";
+    }
+
+    function clearInput() {
+        document.getElementById("msg-input").value = "";
+        document.getElementById("validation-alert").style.display = "none";
+        document.getElementById("result-dashboard").style.display = "none";
+        updateWordCount();
+    }
+
+    async function analyzeMessage() {
         const text = document.getElementById("msg-input").value.trim();
-        if (!text) return alert("Iltimos, matn kiriting!");
+        
+        // 1. Frontend Anti-Gibberish & 3-Word Check
+        const validationError = validateClientSide(text);
+        if (validationError) {
+            showValidationError(validationError);
+            return;
+        }
 
         const btn = document.getElementById("analyze-btn");
-        const resultBox = document.getElementById("result-box");
-        const feedbackStatus = document.getElementById("feedback-status");
-        
+        const dashboard = document.getElementById("result-dashboard");
+        const toast = document.getElementById("feedback-toast");
+
         btn.disabled = true;
-        btn.innerText = "Tahlil qilinmoqda...";
-        feedbackStatus.style.display = "none";
+        btn.innerText = "⏳ Neyron tarmoq tahlil qilmoqda...";
+        toast.style.display = "none";
+        document.getElementById("validation-alert").style.display = "none";
         document.getElementById("btn-correct").disabled = false;
         document.getElementById("btn-incorrect").disabled = false;
 
@@ -252,90 +653,124 @@
                 body: JSON.stringify({ text: text })
             });
 
-            if (!resp.ok) throw new Error("Server xatosi");
+            if (resp.status === 422 || resp.status === 400) {
+                const errData = await resp.json();
+                showValidationError(errData.detail || "Matn tahlil uchun yaroqsiz.");
+                return;
+            }
+
+            if (!resp.ok) throw new Error("API xatosi");
             const data = await resp.json();
 
-            currentTextHash = data.text_hash;
-            resultBox.style.display = "block";
+            currentHash = data.text_hash;
+            dashboard.style.display = "block";
 
-            // Xavf foizi va ranglar
             const prob = data.threat_probability;
-            const probBadge = document.getElementById("prob-badge");
-            const gauge = document.getElementById("gauge-fill");
-            const verdict = document.getElementById("verdict-text");
+            const scoreEl = document.getElementById("prob-score");
+            const fillEl = document.getElementById("progress-fill");
+            const titleEl = document.getElementById("verdict-title");
+            const bannerEl = document.getElementById("verdict-banner");
 
-            probBadge.innerText = `${prob}%`;
-            gauge.style.width = `${prob}%`;
+            scoreEl.innerText = `${prob}%`;
+            fillEl.style.width = `${prob}%`;
 
-            if (prob >= 80) {
-                gauge.style.backgroundColor = "var(--accent-threat)";
-                resultBox.style.borderLeftColor = "var(--accent-threat)";
-                verdict.innerText = "🚨 Yuqori xavfli kiber-tahdid!";
-                verdict.style.color = "var(--accent-threat)";
-            } else if (prob >= 40) {
-                gauge.style.backgroundColor = "var(--accent-warning)";
-                resultBox.style.borderLeftColor = "var(--accent-warning)";
-                verdict.innerText = "⚠️ Shubhali xabar (Ehtiyot bo'ling)";
-                verdict.style.color = "var(--accent-warning)";
+            if (prob >= 75) {
+                fillEl.style.backgroundColor = "var(--danger)";
+                scoreEl.style.color = "var(--danger)";
+                titleEl.innerText = "🚨 YUQORI XAVFLI KIBER-TAHDID";
+                titleEl.style.color = "var(--danger)";
+                bannerEl.style.borderColor = "rgba(239, 68, 68, 0.4)";
+            } else if (prob >= 35) {
+                fillEl.style.backgroundColor = "var(--warn)";
+                scoreEl.style.color = "var(--warn)";
+                titleEl.innerText = "⚠️ SHUBHALI XABAR (EHTIYOT BO'LING)";
+                titleEl.style.color = "var(--warn)";
+                bannerEl.style.borderColor = "rgba(245, 158, 11, 0.4)";
             } else {
-                gauge.style.backgroundColor = "var(--accent-safe)";
-                resultBox.style.borderLeftColor = "var(--accent-safe)";
-                verdict.innerText = "✅ Xavfsiz xabar";
-                verdict.style.color = "var(--accent-safe)";
+                fillEl.style.backgroundColor = "var(--safe)";
+                scoreEl.style.color = "var(--safe)";
+                titleEl.innerText = "✅ XAVFSIZ XABAR";
+                titleEl.style.color = "var(--safe)";
+                bannerEl.style.borderColor = "rgba(16, 185, 129, 0.4)";
             }
 
-            document.getElementById("basis-text").innerText = `Tahlil asosi: ${data.decision_basis}`;
+            document.getElementById("basis-label").innerText = `Tahlil asosi: ${data.decision_basis}`;
 
-            // IoC belgilarini chiqarish
+            const stats = data.vault_stats || {};
+            document.getElementById("occurrence-badge").innerText = `👁️ Bazada uchrashi: ${stats.occurrence_count || 1} marta`;
+            document.getElementById("count-correct").innerText = stats.correct_count || 0;
+            document.getElementById("count-incorrect").innerText = stats.incorrect_count || 0;
+            document.getElementById("soc-basket").innerText = stats.basket_type || "inference_raw_logs";
+
             const iocBox = document.getElementById("ioc-container");
             iocBox.innerHTML = "";
-            if (data.detected_iocs.card) {
-                iocBox.innerHTML += `<span class="tag">💳 ${data.detected_iocs.card}</span>`;
-            }
-            if (data.detected_iocs.domain) {
-                iocBox.innerHTML += `<span class="tag">🌐 Domen: ${data.detected_iocs.domain}</span>`;
-            }
-            if (data.detected_iocs.has_apk) {
-                iocBox.innerHTML += `<span class="tag" style="color:var(--accent-threat)">📦 Xavfli APK fayl</span>`;
-            }
+            const iocs = data.detected_iocs || {};
 
-        } catch (e) {
-            alert("Ulanishda xatolik yuz berdi. Render serveri uyg'onishini 30 soniya kuting.");
+            if (iocs.card) iocBox.innerHTML += `<span class="ioc-badge">💳 ${iocs.card}</span>`;
+            if (iocs.domain) iocBox.innerHTML += `<span class="ioc-badge">🌐 Domen: ${iocs.domain}</span>`;
+            if (iocs.has_apk) iocBox.innerHTML += `<span class="ioc-badge" style="border-color:var(--danger); color:var(--danger);">📦 Zararli .APK</span>`;
+            if (iocs.has_otp) iocBox.innerHTML += `<span class="ioc-badge">🔑 Maxfiy kod/parol so'rovi</span>`;
+            if (!iocBox.innerHTML) iocBox.innerHTML = `<span class="ioc-badge">✅ Zararli texnik IoC topilmadi</span>`;
+
+            document.getElementById("masked-preview").innerText = `🔒 Bazaga yozilgan xavfsiz matn (PII Masking): "${data.masked_text || text}"`;
+
+            const recList = document.getElementById("rec-list");
+            recList.innerHTML = "";
+            const recs = data.recommendations || [
+                "Noma'lum havolalarga kirmang va shaxsiy SMS kodlarni hech kimga bermang."
+            ];
+            recs.forEach(item => {
+                const li = document.createElement("li");
+                li.innerText = item;
+                recList.appendChild(li);
+            });
+
+            const soc = data.soc_analysis || {};
+            document.getElementById("soc-category").innerText = soc.threat_category || "Standard Analysis";
+            document.getElementById("soc-vector").innerText = soc.attack_vector || "Matnli xabar";
+            document.getElementById("soc-hash").innerText = data.text_hash ? `${data.text_hash.substring(0, 16)}...` : "-";
+
+        } catch (err) {
+            alert("Server bilan aloqa o'rnatishda xatolik. Render serveri uyg'onishini 20-30 soniya kuting.");
         } finally {
             btn.disabled = false;
-            btn.innerText = "Tahlil qilish";
+            btn.innerText = "🔍 Kiber-Tahlilni Boshlash";
         }
     }
 
     async function sendFeedback(reaction) {
-        if (!currentTextHash) return;
+        if (!currentHash) return;
 
-        const btnCorrect = document.getElementById("btn-correct");
-        const btnIncorrect = document.getElementById("btn-incorrect");
-        const statusText = document.getElementById("feedback-status");
+        const btnC = document.getElementById("btn-correct");
+        const btnI = document.getElementById("btn-incorrect");
+        const toast = document.getElementById("feedback-toast");
 
-        btnCorrect.disabled = true;
-        btnIncorrect.disabled = true;
+        btnC.disabled = true;
+        btnI.disabled = true;
 
         try {
             const resp = await fetch(`${BACKEND_URL}/feedback`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    text_hash: currentTextHash,
+                    text_hash: currentHash,
                     user_reaction: reaction
                 })
             });
 
             if (resp.ok) {
                 const res = await resp.json();
-                statusText.style.display = "block";
-                statusText.innerText = `Rahmat! Xabar saralash savatiga yo'naltirildi: [${res.assigned_basket}]`;
+                document.getElementById("count-correct").innerText = res.correct_count;
+                document.getElementById("count-incorrect").innerText = res.incorrect_count;
+                document.getElementById("soc-basket").innerText = res.assigned_basket;
+
+                toast.style.display = "block";
+                toast.innerText = `✓ Ovoz qabul qilindi! Yangilangan savat: [${res.assigned_basket}]`;
             }
         } catch (e) {
-            alert("Fikrni saqlashda xatolik yuz berdi.");
-            btnCorrect.disabled = false;
-            btnIncorrect.disabled = false;
+            alert("Fikrni yuborishda xatolik yuz berdi.");
+            btnC.disabled = false;
+            btnI.disabled = false;
         }
     }
 </script>
